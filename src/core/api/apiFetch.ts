@@ -18,6 +18,7 @@ import { z } from "zod";
 import { env } from "@/core/config/env";
 import { getRequestContext } from "@/core/api/context";
 import { ApiResult, fail, ok } from "@/core/api/response";
+import { resolveMock, simulateLatency, parseQuery } from "@/core/api/mockRegistry";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -55,6 +56,22 @@ export async function apiFetch<TResponse, TBody = unknown>(
         parsed.error.flatten()
       );
     }
+  }
+
+  // 1b. MOCK MODE.
+  if (env.useMocks) {
+    const resolved = resolveMock(method, path);
+    if (!resolved) return fail("network", `No hay un mock para ${method} ${path}.`);
+    await simulateLatency();
+    let mockPayload: unknown;
+    try {
+      mockPayload = await resolved.handler({ params: resolved.params, query: parseQuery(path), body });
+    } catch {
+      return fail("business", "El mock no pudo resolver la operación.");
+    }
+    const parsedMock = responseSchema.safeParse(mockPayload);
+    if (!parsedMock.success) return fail("validation", "La respuesta (mock) no tiene el formato esperado.", parsedMock.error.flatten());
+    return ok(parsedMock.data);
   }
 
   // 2. Build the request: inject identity context, base url, headers.

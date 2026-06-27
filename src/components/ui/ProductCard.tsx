@@ -40,7 +40,7 @@ export function ProductCard({
   }).format(product.price);
 
   return (
-    <Card sx={{ borderRadius: 3 }}>
+    <Card sx={{ borderRadius: 2 }}>
       <CardActionArea
         onClick={onClick ? () => onClick(product) : undefined}
         sx={{

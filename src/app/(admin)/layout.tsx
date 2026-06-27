@@ -7,11 +7,16 @@
  */
 
 import { AdminShell } from "@/components/layout";
+import { TenantConfigProvider } from "@/modules/tenant";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <TenantConfigProvider>
+      <AdminShell>{children}</AdminShell>
+    </TenantConfigProvider>
+  );
 }
