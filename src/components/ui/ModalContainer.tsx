@@ -12,7 +12,21 @@ export function ModalContainer({ open,onClose,title,width="xs",primaryLabel,onPr
   const showPrimary = Boolean(primaryLabel); const showSecondary = Boolean(secondaryLabel);
   const showActions = showPrimary || showSecondary;
   return (
-    <Dialog open={open} onClose={onClose} maxWidth={width} fullWidth disableEscapeKeyDown={primaryLoading}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={width}
+      fullWidth
+      disableEscapeKeyDown={primaryLoading}
+      PaperProps={{
+        sx: {
+          backgroundColor: "background.paper",
+          backgroundImage: "none",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+        },
+      }}
+    >
       <DialogTitle component="div" sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:1, pr:1.5 }}>
         <Typography variant="h6" sx={{ fontWeight:500 }}>{title}</Typography>
         <IconButton aria-label="Cerrar" onClick={onClose} disabled={primaryLoading} size="small" edge="end"><CloseIcon fontSize="small" /></IconButton>
